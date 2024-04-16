@@ -1,0 +1,68 @@
+<h1>Toycom Emulator</h1>
+<div>
+    전중남 교수님의 생능출판사 - 컴퓨터구조에 나와있는 toycom의 에뮬레이터입니다<br>
+    <a href="./programmer-model.html">Toycom이란?</a>
+</div>
+
+<div>
+    <h2>프로그램</h2>
+    <textarea cols="20" rows="20" id="code">
+; 테스트 프로그램
+; 데이터 로드 후 덧셈
+load r0,0x00
+load r1,0x01
+add r2,r0,r1
+store r2,0x02
+
+; 데이터
+.org 0x00
+0x04
+0x07
+    </textarea>
+</div>
+<button id="load_program">프로그램 로드</button>
+<button id="run_line">한줄씩 실행</button>
+
+<h2>레지스터</h2>
+<table border="1">
+    <tr><td>PC</td><td id="pc">0x00</td></tr>
+    <tr><td>IR</td><td id="ir">0x00</td></tr>
+    <tr><td>SP</td><td id="sp">0x00</td></tr>
+    <tr><td>R0</td><td id="r0">0x00</td></tr>
+    <tr><td>R1</td><td id="r1">0x00</td></tr>
+    <tr><td>R2</td><td id="r2">0x00</td></tr>
+    <tr><td>R3</td><td id="r3">0x00</td></tr>
+    <tr><td>R4</td><td id="r4">0x00</td></tr>
+    <tr><td>R5</td><td id="r5">0x00</td></tr>
+    <tr><td>R6</td><td id="r6">0x00</td></tr>
+    <tr><td>R7</td><td id="r7">0x00</td></tr>
+</table>
+
+<h2>메모리</h2>
+<table border="1" id="memory">
+    <tr>
+        <td>주소</td>
+        <td>메모리</td>
+    </tr>
+    <tr><td>0x00</td><td>0x00</td></tr>
+    <tr><td>0x01</td><td>0x00</td></tr>
+    <tr><td>0x02</td><td>0x00</td></tr>
+    <tr><td>0x03</td><td>0x00</td></tr>
+    <tr><td>0x04</td><td>0x00</td></tr>
+    <tr><td>0x05</td><td>0x00</td></tr>
+    <tr><td>0x06</td><td>0x00</td></tr>
+    <tr><td>0x07</td><td>0x00</td></tr>
+    <tr><td>0x08</td><td>0x00</td></tr>
+    <tr><td>0x09</td><td>0x00</td></tr>
+    <tr><td>0x0a</td><td>0x00</td></tr>
+    <tr><td>0x0b</td><td>0x00</td></tr>
+    <tr><td>0x0c</td><td>0x00</td></tr>
+    <tr><td>0x0d</td><td>0x00</td></tr>
+    <tr><td>0x0e</td><td>0x00</td></tr>
+    <tr><td>0x0f</td><td>0x00</td></tr>
+</table>
+
+<button id="prev_memory">이전 페이지</button>
+<button id="next_memory">다음 페이지</button>
+
+<script src="./toycom.js"></script>
