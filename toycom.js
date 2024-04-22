@@ -1,3 +1,168 @@
+class Register {
+    /*
+    Register class
+    name : ragister name, bits : register size in bits, value : initial value
+    */
+    constructor(name,bits,value){
+        this.name = name
+        this.bits = bits;
+        this.mask = (2**(this.bits + 1) - 1);
+        this.value = 0;
+        this.put(value);
+    }
+    getHexCode(){
+        let hex = this.value.toString(16).toUpperCase();
+        return "0x" + "0".repeat(this.bits/4-hex.length) + hex;
+    }
+    put(value){
+        if(typeof(value) !== 'number') {
+            console.error(this.name + " value type error");
+            return;
+        }
+        this.value = value & this.mask;
+    }
+    get(){
+        return this.value;
+    }
+    log(){
+        console.log(this.name + " : " + this.getHexCode());
+    }
+}
+
+class ALU {
+    /*
+    ALU class
+    size : word size in bytes
+    */
+    constructor(bits){
+        this.bits = bits;
+        this.mask = (1<<(this.bits + 1) - 1);
+    }
+
+    adder (a, b) {
+        return (a+b) & this.mask;
+    }
+    
+    subber (a, b) {
+        return adder(a, this.twosComplement(b));
+    }
+    
+    twosComplement (a) {
+        return (~a) & this.mask;
+    }
+    
+    and (a, b) {
+        return a & b & this.mask;
+    }
+    
+    or (a, b) {
+        return a | b & this.mask;
+    }
+}
+
+class Memory {
+    /*
+    Memory class
+    addressBits : address length in bits
+    dataBits : data per address size in bits
+    */
+    constructor(addressBits, dataBits){
+        this.addressBits = addressBits;
+        this.count = 2**addressBits;
+        this.dataBits = dataBits;
+        this.mask = (2**(this.dataBits + 1) - 1);
+        this.memory = [];
+        for (var i = 0; i < this.count; i++) {
+            this.memory.push(0);
+        }
+    }
+
+    init(){
+        for (var i = 0; i < this.count; i++) {
+            this.memory[i] = 0;
+        }
+    }
+
+    getHexCode(value, bits) {
+        var prefix = "0x"
+        if(value < 0) {
+            prefix = "-0x"
+            value = value*-1;
+        } 
+        let hex = value.toString(16).toUpperCase();
+        var repeat = bits/4-hex.length;
+        return prefix + "0".repeat(repeat < 0 ? 0 : repeat) + hex;
+    }
+
+    getHexCodeData(address){ 
+        return this.getHexCode(this.memory[this.purifyAddress(address)], this.dataBits);
+    }
+
+    getHexCodeAddress(address){
+        return this.getHexCode(address, this.addressBits);
+    }
+
+    /*
+    purifyAddress : address를 정규화하는 함수
+    */
+    purifyAddress(address){
+        if(typeof(address) !== 'number') {
+            console.error("Memory address type error");
+            return 0;
+        }
+
+        var purifiedAddress = address;
+
+        if (purifiedAddress < 0) { // underflow 구현
+            purifiedAddress = this.count - ((-1*purifiedAddress) % this.count);
+        }
+
+        if (purifiedAddress >= this.count) { // overflow 구현
+            purifiedAddress = purifiedAddress % this.count;
+        }
+
+        if(address < 0 || address >= this.count) {
+            console.warn("Memory out of range : " + this.getHexCodeAddress(address) + ", purified to " + this.getHexCodeAddress(purifiedAddress));
+        }
+        return purifiedAddress;
+    }
+
+    load(address){
+        return this.memory[this.purifyAddress(address)];
+    }
+
+    store(address, value){
+        this.memory[this.purifyAddress(address)] = value & this.mask;
+    }
+
+    log(address){
+        address = this.purifyAddress(address)
+        console.log(this.getHexCodeAddress(address) + " : " + this.getHexCodeData(address));
+    }
+}
+
+var alu = new ALU(1);
+var mem = new Memory(16, 8);
+
+var pc = new Register("PC", 8, 0x7f);
+var ir = new Register("IR", 16, 0);
+var sp = new Register("SP", 8, 0xff);
+var sr = new Register("SR", 8, 0);
+var mbr = new Register("MBR", 8, 0);
+var mar = new Register("MAR", 8, 0);
+
+var r0 = new Register("R0", 8, 0);
+var r1 = new Register("R1", 8, 0);
+var r2 = new Register("R2", 8, 0);
+var r3 = new Register("R3", 8, 0);
+var r4 = new Register("R4", 8, 0);
+var r5 = new Register("R5", 8, 0);
+var r6 = new Register("R6", 8, 0);
+var r7 = new Register("R7", 8, 0);
+
+var registers = [r0, r1, r2, r3, r4, r5, r6, r7];
+
+
 
 
 const wordSize = 8;
@@ -13,13 +178,6 @@ var registers = [];
 for (var i=0; i<regs; i++){
     registers.push(0);
 }
-
-var pc = 0x7f; // 처음 시작 위치
-var ir = 0;
-var sp = 0xff; // 처음 위치
-var sr = 0;
-var mbr = 0;
-var mar = 0;
 
 // 연산회로...
 // TODO : SR set 필요
