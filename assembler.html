@@ -1,0 +1,28 @@
+<script src="./assembler.js"></script>
+<script>
+    function assembleCode() {
+        let code = document.getElementById("code").value;
+        let binaryText = document.getElementById("binary");
+        let binary = assemble(code);
+        binaryText.value = binaryCodeToString(binary);
+    }
+
+    function clearText() {
+        document.getElementById("code").value = "";
+        document.getElementById("binary").value = "";
+    }
+</script>
+<div style=" display: flex; text-align: center;">
+    <div>
+        <h1>Toycom Assembly</h1>
+        <textarea rows="40" cols="50" id="code"></textarea>
+    </div>
+    <div style="margin-top: auto;margin-bottom:auto; height:100%">
+        <button onclick="assembleCode()">Assemble</button>
+        <button onclick="clearText()">Clear</button>
+    </div>
+    <div>
+        <h1>Binary Code</h1>
+        <textarea rows="40" cols="50" id="binary"></textarea>
+    </div>
+</div>
